@@ -1,5 +1,6 @@
 from math import log
 import numpy as np
+import csv
 
 
 def get_data_set_and_feature_labels():
@@ -7,8 +8,11 @@ def get_data_set_and_feature_labels():
 
 
     # TODO: Instantiate the data set and the labels
-    feature_labels = ['Person', 'HairLength', 'Weight', 'Age']
-    data_set = np.loadtxt("./data_sets1/training_set.csv", delimiter=',', dtype='string', skiprows=1)
+    feature_labels = ['XB', 'XC', 'XD', 'XE', 'XF', 'XG', 'XH','XI','XJ','XK','XL','XM','XN','XO','XP','XQ','XR','XS', 'XT','XU']
+
+    with open('./data_sets1/training_set.csv', 'rb') as csv_file:
+        reader = csv.reader(csv_file)
+        data_set = list(reader)
 
     return data_set, feature_labels
 
