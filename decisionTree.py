@@ -3,18 +3,7 @@ import numpy as np
 
 
 def get_data_set_and_feature_labels():
-    dataSet = [[0, 1, 1, 'yes'],
-               [0, 1, 0, 'no'],
-               [1, 0, 1, 'no'],
-               [1, 1, 1, 'no'],
-               [0, 1, 0, 'no'],
-               [0, 0, 1, 'no'],
-               [1, 0, 1, 'no'],
-               [1, 1, 0, 'no']]
-    labels = ['cartoon', 'winter', 'more than 1 person']
-    # change to discrete values
-    return dataSet, labels
-'''
+
 
 
     # TODO: Instantiate the data set and the labels
@@ -22,9 +11,6 @@ def get_data_set_and_feature_labels():
     data_set = np.loadtxt("./data_sets1/training_set.csv", delimiter=',', dtype='string', skiprows=1)
 
     return data_set, feature_labels
-
-
-'''
 
 
 def calculate_entropy(data_set):
