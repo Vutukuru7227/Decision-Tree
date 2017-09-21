@@ -1,21 +1,33 @@
 from math import log
-import numpy as np
 import csv
+import operator
 
 
 def get_data_set_and_feature_labels():
-
+    '''
+    dataSet = [[0, 1, 1, 'yes'],
+               [0, 1, 0, 'no'],
+               [1, 0, 1, 'no'],
+               [1, 1, 1, 'no'],
+               [0, 1, 0, 'no'],
+               [0, 0, 1, 'no'],
+               [1, 0, 1, 'no'],
+               [1, 1, 0, 'no']]
+    labels = ['cartoon', 'winter', 'more than 1 person']
+    # change to discrete values
+    return dataSet, labels
+    :return:
+    '''
     # TODO: Instantiate the data set and the labels
     feature_labels = ['XB', 'XC', 'XD', 'XE', 'XF', 'XG', 'XH', 'XI', 'XJ', 'XK', 'XL', 'XM', 'XN', 'XO', 'XP', 'XQ', 'XR', 'XS', 'XT', 'XU']
 
     #feature_labels = ['Hair Length', 'Weight', 'Age']
-    with open('./data_sets1/training_set.csv', 'rb') as csv_file:
+    with open('./data_sets1/training_set.csv', 'rt') as csv_file:
         next(csv_file)
         reader = csv.reader(csv_file)
         data_set = list(reader)
 
     return data_set, feature_labels
-
 
 
 def calculate_entropy(data_set):
@@ -60,7 +72,7 @@ def divide_data_set(data_set, attribute_value, set_value):
     divided_data_set = []
     for attribute_vector in data_set:
         if attribute_vector[attribute_value] == set_value:
-            reduced_attribute_list = data_set[:attribute_value]
+            reduced_attribute_list = attribute_vector[:attribute_value]
             reduced_attribute_list.extend(attribute_vector[attribute_value+1:])
             divided_data_set.append(reduced_attribute_list)
 
@@ -68,15 +80,16 @@ def divide_data_set(data_set, attribute_value, set_value):
 
 
 def check_best_attribute_to_split(data_set):
+
     no_of_remaining_attributes = len(data_set[0])-1
     entropy_of_parent = calculate_entropy(data_set)
 
     highest_information_gain = 0.0
-    best_feature = -99
+    best_feature = -1
 
     for i in range(no_of_remaining_attributes):
-        attribute_value = [e[i] for e in data_set]
-        unique_attribute_value = set(attribute_value)
+        attr = [value[i] for value in data_set]
+        unique_attribute_value = set(attr)
         split_entropy = 0.0
         for value in unique_attribute_value:
             split_data_set = divide_data_set(data_set, i, value)
@@ -84,34 +97,47 @@ def check_best_attribute_to_split(data_set):
             split_entropy += probability * calculate_entropy(split_data_set)
 
         information_gain = entropy_of_parent - split_entropy
-        print(entropy_of_parent, "-", split_entropy, "=", entropy_of_parent-split_entropy)
 
         if information_gain > highest_information_gain:
             highest_information_gain = information_gain
             best_feature = i
-            print(feature_labels[best_feature], ":", information_gain)
 
     return best_feature
 
 
 def build_tree(data_set, feature_labels):
-    label_list = [each_instance[-1] for each_instance in data_set]
 
-    if check_for_entropy(label_list):
+    label_list = [each_instance[-1] for each_instance in data_set]
+    if label_list.count(label_list[0]) == len(label_list):
         return label_list[0]
+
     # TODO: NEED to check for the number of feature values remaining =================NEEDS ATTENTION
+    if len(data_set[0]) == 0:
+        pass
 
     # TODO: Check for the best attribute to split on
     best_attribute = check_best_attribute_to_split(data_set)
-    print("The best attribute is:", feature_labels[best_attribute])
+    best_feature = feature_labels[best_attribute]
 
+    decision_tree = {best_feature: {}}
+    del feature_labels[best_attribute]
+
+    feature = [each_feature[best_attribute] for each_feature in data_set]
+
+    unique_values = set(feature)
+    for value in unique_values:
+        remaining_labels = feature_labels[:]
+        decision_tree[best_feature][value] = build_tree(divide_data_set(data_set, best_attribute, value), remaining_labels)
+
+    return decision_tree
 
 if __name__ == '__main__':
 
     # TODO: Function call to fetch the data and feature labels
     data_set, feature_labels = get_data_set_and_feature_labels()
 
-    print("Base entropy is", calculate_entropy(data_set))
-
     # TODO: Function call to build the Tree
     tree = build_tree(data_set, feature_labels)
+    print("Started")
+    print(tree)
+    print("Finished")
